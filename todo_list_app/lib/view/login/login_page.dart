@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:todo_list_app/model/user_list.dart';
-import 'package:todo_list_app/view/sign_up_page.dart';
-import 'package:todo_list_app/view/todo_list_page.dart';
+import 'package:todo_list_app/view/home_tabbar_page.dart';
+import 'package:todo_list_app/view/login/sign_up_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -76,8 +76,8 @@ class _LoginPageState extends State<LoginPage> {
     for (int userIndex = 0; userIndex < UserList.userIdList.length; userIndex++) {
       if (idController.text.trim() == UserList.userIdList[userIndex] &&
           pwController.text.trim() == UserList.userPwList[userIndex]) {
-        Get.to(
-          () => const TodoListPage(),
+        Get.offAll(
+          () => const HomeTabbarPage(),
           arguments: userIndex,
         );
         return;

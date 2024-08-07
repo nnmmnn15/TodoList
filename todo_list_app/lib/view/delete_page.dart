@@ -15,15 +15,13 @@ class _DeletePageState extends State<DeletePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('휴지통'),
-        centerTitle: false,
-      ),
-      body: Center(
-        child: SizedBox(
-          width: 340,
-          // 리스트뷰 빌더
-          child: ListView.builder(
+      backgroundColor: Colors.amber[100],
+      body: Padding(
+        padding: const EdgeInsets.only(top: 20),
+        child: Center(
+          child: UserList.todoDataList[userIndex].deleteList.isEmpty ? 
+          const Text('삭제된 일이 없습니다'):
+          ListView.builder(
             // 유저의 리스트 중 투두리스트의 길이
             itemCount: UserList.todoDataList[userIndex].deleteList.length,
             itemBuilder: (context, index) {
@@ -68,20 +66,42 @@ class _DeletePageState extends State<DeletePage> {
                   }
                   setState(() {});
                 },
-                child: Card(
-                  color: Colors.amber[50],
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: SizedBox(
-                      height: 50,
-                      child: Center(
-                        child: Row(
-                          children: [
-                            Text(
-                              UserList.todoDataList[userIndex].deleteList[index]
-                                  .todoText,
-                            ),
-                          ],
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Container(
+                    decoration: const BoxDecoration(
+                        border: Border(
+                            bottom: BorderSide(color: Colors.black, width: 1))),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: SizedBox(
+                        height: 50,
+                        child: Center(
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                width: 40,
+                                child: Text(UserList.todoDataList[userIndex]
+                                    .deleteList[index].categorySet.categoryName),
+                              ),
+                              Container(
+                                width: 10,
+                                color: UserList.todoDataList[userIndex]
+                                    .deleteList[index].categorySet.categoryColor,
+                              ),
+                              Text(
+                                UserList.todoDataList[userIndex].deleteList[index]
+                                    .todoText,
+                                style: TextStyle(
+                                  decoration: UserList.todoDataList[userIndex]
+                                          .deleteList[index].todoState
+                                      ? TextDecoration.lineThrough
+                                      : TextDecoration.none,
+                                  decorationThickness: 2,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),

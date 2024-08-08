@@ -28,6 +28,11 @@ class _TodoListPageState extends State<TodoListPage> {
     super.initState();
     addTodoController = TextEditingController();
     now = DateTime.now();
+    sortTodoList();
+  }
+
+  sortTodoList(){
+    UserList.todoDataList[userIndex].todoList.sort((a, b) => a.deadline.compareTo(b.deadline));
   }
 
   @override
@@ -341,6 +346,7 @@ class _TodoListPageState extends State<TodoListPage> {
       // 입력후 텍스트필드 초기화
       addTodoController.text = '';
       Get.back();
+      sortTodoList();
       setState(() {});
     }
   }
@@ -359,6 +365,7 @@ class _TodoListPageState extends State<TodoListPage> {
       // 입력후 텍스트필드 초기화
       addTodoController.text = '';
       Get.back();
+      sortTodoList();
       setState(() {});
     }
   }

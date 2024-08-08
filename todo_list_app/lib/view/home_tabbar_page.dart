@@ -57,16 +57,19 @@ class _HomeTabbarPageState extends State<HomeTabbarPage>
               height: 200,
               color: const Color.fromRGBO(189, 187, 251, 1),
               alignment: Alignment.bottomLeft,
-              child: Padding(
-                padding: const EdgeInsets.all(15.0),
-                child: const CircleAvatar(
+              child: const Padding(
+                padding: EdgeInsets.all(15.0),
+                child: CircleAvatar(
                   backgroundImage: AssetImage('images/login.png'),
                   radius: 40,
                 ),
               ),
             ),
             ListTile(
-              title: const Text('로그아웃'),
+              title: const Text(
+                '로그아웃',
+                style: TextStyle(color: Colors.red),
+              ),
               onTap: () {
                 Get.offAll(const LoginPage());
               },
@@ -78,7 +81,6 @@ class _HomeTabbarPageState extends State<HomeTabbarPage>
         color: Colors.amberAccent,
         height: 100,
         child: TabBar(
-          
           controller: controller,
           labelColor: const Color.fromARGB(255, 23, 7, 96),
           unselectedLabelColor: Colors.grey[600],

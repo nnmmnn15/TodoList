@@ -18,11 +18,16 @@ class _TodoListPageState extends State<TodoListPage> {
   late TextEditingController addTodoController;
   late Color categoryColor;
   late String categoryString;
+  late DateTime taskDay; // 일정 날짜
+  late DateTime now; // 현재 날짜
+  late bool addCheck; // 추가, 수정 확인용 true일때 추가
+  late int updateIndex; // 수정시 참고할 인덱스
 
   @override
   void initState() {
     super.initState();
     addTodoController = TextEditingController();
+    now = DateTime.now();
   }
 
   @override
@@ -38,19 +43,25 @@ class _TodoListPageState extends State<TodoListPage> {
               Flexible(
                 // 리스트뷰 빌더
                 child: ListView.builder(
-                  // 유저의 리스트 중 투두리스트의 길이
+                  // 유저의 리스트 중 투두리스트의 길이 + 1
+                  // + 1 은 마지막에 일정 추가 버튼을 위함
                   itemCount:
                       UserList.todoDataList[userIndex].todoList.length + 1,
                   itemBuilder: (context, index) {
-                    // 스와이프시 삭제
+                    // 마지막 위치의 여부 판단
+                    // 마지막 버튼은 일정 추가 버튼을 하기 위함
                     return UserList.todoDataList[userIndex].todoList.length ==
                             index
                         ?
                         // 마지막 문구 (추가버튼)
                         TextButton(
-                            onPressed: () => actionSheet(),
-                            // height: 50,
-                            // alignment: Alignment.center,
+                            onPressed: () {
+                              actionSheet();
+                              addTodoController.text = '';
+                              now = DateTime.now();
+                              taskDay = DateTime(now.year, now.month, now.day);
+                              addCheck = true;
+                            },
                             child: const Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -63,6 +74,7 @@ class _TodoListPageState extends State<TodoListPage> {
                           )
                         :
                         // To do list 데이터
+                        // 스와이프시 삭제
                         Dismissible(
                             key: ValueKey(UserList
                                 .todoDataList[userIndex].todoList[index]),
@@ -78,6 +90,7 @@ class _TodoListPageState extends State<TodoListPage> {
                                 ),
                               ),
                             ),
+                            // 스와이프시 로직
                             onDismissed: (direction) {
                               // 삭제 리스트에 추가
                               UserList.todoDataList[userIndex].deleteList.add(
@@ -95,6 +108,7 @@ class _TodoListPageState extends State<TodoListPage> {
                                   const EdgeInsets.symmetric(horizontal: 20),
                               // 할일 완료 제스쳐
                               child: GestureDetector(
+                                // 더블 클릭시 상태변화
                                 onDoubleTap: () {
                                   UserList.todoDataList[userIndex]
                                           .todoList[index].todoState =
@@ -102,9 +116,32 @@ class _TodoListPageState extends State<TodoListPage> {
                                           .todoList[index].todoState;
                                   setState(() {});
                                 },
+                                // 한번 터치시 업데이트, 수정
+                                onTap: () {
+                                  addTodoController.text = UserList
+                                      .todoDataList[userIndex]
+                                      .todoList[index]
+                                      .todoText;
+                                  taskDay = UserList.todoDataList[userIndex]
+                                      .todoList[index].deadline;
+                                  categoryColor = UserList
+                                      .todoDataList[userIndex]
+                                      .todoList[index]
+                                      .categorySet
+                                      .categoryColor;
+                                  categoryString = UserList
+                                      .todoDataList[userIndex]
+                                      .todoList[index]
+                                      .categorySet
+                                      .categoryName;
+                                  addCheck = false;
+                                  updateIndex = index;
+                                  addTodoBottomSheet();
+                                },
                                 child: Container(
                                   decoration: const BoxDecoration(
                                       border: Border(
+                                          // 하단선
                                           bottom: BorderSide(
                                               color: Colors.black, width: 1))),
                                   child: Padding(
@@ -114,36 +151,54 @@ class _TodoListPageState extends State<TodoListPage> {
                                       height: 50,
                                       child: Center(
                                         child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
-                                            SizedBox(
-                                              width: 40,
-                                              child: Text(UserList
-                                                  .todoDataList[userIndex]
-                                                  .todoList[index]
-                                                  .categorySet
-                                                  .categoryName),
+                                            Row(
+                                              children: [
+                                                // 카테고리 명
+                                                SizedBox(
+                                                  width: 40,
+                                                  child: Text(UserList
+                                                      .todoDataList[userIndex]
+                                                      .todoList[index]
+                                                      .categorySet
+                                                      .categoryName),
+                                                ),
+                                                // 카테고리 색
+                                                Container(
+                                                  width: 10,
+                                                  color: UserList
+                                                      .todoDataList[userIndex]
+                                                      .todoList[index]
+                                                      .categorySet
+                                                      .categoryColor,
+                                                ),
+                                                // 할일
+                                                Text(
+                                                  UserList
+                                                      .todoDataList[userIndex]
+                                                      .todoList[index]
+                                                      .todoText,
+                                                  style: TextStyle(
+                                                    // 할일의 상태에 따라 취소선 true 일때 취소선
+                                                    decoration: UserList
+                                                            .todoDataList[
+                                                                userIndex]
+                                                            .todoList[index]
+                                                            .todoState
+                                                        ? TextDecoration
+                                                            .lineThrough
+                                                        : TextDecoration.none,
+                                                    decorationThickness: 2,
+                                                    fontSize: 18,
+                                                  ),
+                                                ),
+                                              ],
                                             ),
-                                            Container(
-                                              width: 10,
-                                              color: UserList
-                                                  .todoDataList[userIndex]
-                                                  .todoList[index]
-                                                  .categorySet
-                                                  .categoryColor,
-                                            ),
+                                            // 날짜 표시
                                             Text(
-                                              UserList.todoDataList[userIndex]
-                                                  .todoList[index].todoText,
-                                              style: TextStyle(
-                                                decoration: UserList
-                                                        .todoDataList[userIndex]
-                                                        .todoList[index]
-                                                        .todoState
-                                                    ? TextDecoration.lineThrough
-                                                    : TextDecoration.none,
-                                                decorationThickness: 2,
-                                              ),
-                                            ),
+                                                '${UserList.todoDataList[userIndex].todoList[index].deadline.toString().split(' ')[0]}까지'),
                                           ],
                                         ),
                                       ),
@@ -160,8 +215,15 @@ class _TodoListPageState extends State<TodoListPage> {
           ),
         ),
       ),
+      // 플로팅 버튼
       floatingActionButton: FloatingActionButton(
-        onPressed: () => actionSheet(), //addTodoBottomSheet(),
+        onPressed: () {
+          actionSheet();
+          addTodoController.text = '';
+          now = DateTime.now();
+          taskDay = DateTime(now.year, now.month, now.day);
+          addCheck = true;
+        }, //addTodoBottomSheet(),
         backgroundColor: Colors.deepPurple[200],
         foregroundColor: Colors.white,
         child: const Icon(Icons.add),
@@ -169,52 +231,104 @@ class _TodoListPageState extends State<TodoListPage> {
     );
   }
 
+  // 할일 추가 바텀시트
+  // int? index 인덱스 값이 있을수도 있고 없을 수도 있음
   addTodoBottomSheet() {
-    Get.bottomSheet(
-      Container(
-        width: 500,
-        height: 120,
-        decoration: BoxDecoration(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
-            color: categoryColor),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                SizedBox(
-                  width: 340,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 18),
-                    child: TextField(
-                      controller: addTodoController,
-                      autofocus: true,
-                      keyboardType: TextInputType.text,
-                      decoration: const InputDecoration(
-                          labelText: '추가할 일을 적어주세요',
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide.none,
-                          )),
-                    ),
+    /* 
+    바텀 시트는 위젯 내부의 상태를 관리하기위해
+    StatefulBuilder 가 필요
+    */
+    Get.bottomSheet(Builder(
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Container(
+              width: 700,
+              height: 110,
+              // 바텀 시트 데코레이션
+              decoration: BoxDecoration(
+                  borderRadius:
+                      const BorderRadius.vertical(top: Radius.circular(15)),
+                  color: categoryColor),
+              child: Column(
+                children: [
+                  // 입력 상단
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      SizedBox(
+                        width: 340,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 18),
+                          // 할 일 작성 텍스트 필드
+                          child: TextField(
+                            controller: addTodoController,
+                            autofocus: true,
+                            keyboardType: TextInputType.text,
+                            decoration: const InputDecoration(
+                                labelText: '추가할 일을 적어주세요',
+                                focusedBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                )),
+                          ),
+                        ),
+                      ),
+                      // 작성 완료 버튼
+                      IconButton(
+                        onPressed: () => addCheck ? addTodo() : updateTodo(),
+                        icon: const Icon(Icons.arrow_forward_ios),
+                      )
+                    ],
                   ),
-                ),
-                IconButton(
-                  onPressed: () => addTodo(),
-                  icon: const Icon(Icons.arrow_forward_ios),
-                )
-              ],
-            ),
-            TextButton(
-              onPressed: () => calandarDialog(),
-              child: Text('day'),
-            ),
-          ],
-        ),
-      ),
-    );
+
+                  // 입력 하단
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          // 달력 (날짜 선택)
+                          showDatePicker(
+                            context: context,
+                            barrierDismissible: false,
+                            // 달력 시작일
+                            firstDate: now.subtract(const Duration(days: 1825)),
+                            // 선택된 달력일
+                            initialDate: taskDay,
+                            // 달력 종료일
+                            lastDate: now.add(const Duration(days: 1825)),
+                          ).then(
+                            (value) {
+                              if (value != null) {
+                                taskDay = value;
+                                setState(() {});
+                              }
+                            },
+                          );
+                        },
+                        child: Text('${taskDay.month}월 ${taskDay.day}일'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Get.back();
+                          actionSheet();
+                        },
+                        child: Text('$categoryString / 카테고리 변경'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    ));
   }
 
+  // 할 일 추가시 동작
   addTodo() {
+    // 입력란이 비어있을 때
     if (addTodoController.text.trim().isEmpty) {
       errorSnackBar('할일을 작성해주세요');
     } else {
@@ -222,7 +336,27 @@ class _TodoListPageState extends State<TodoListPage> {
           todoText: addTodoController.text,
           categorySet: CategorySet(
               categoryColor: categoryColor, categoryName: categoryString),
-          todoState: false));
+          todoState: false,
+          deadline: taskDay));
+      // 입력후 텍스트필드 초기화
+      addTodoController.text = '';
+      Get.back();
+      setState(() {});
+    }
+  }
+
+  // 할 일 수정시 동작
+  updateTodo() {
+    if (addTodoController.text.trim().isEmpty) {
+      errorSnackBar('할일을 작성해주세요');
+    } else {
+      UserList.todoDataList[userIndex].todoList[updateIndex] = Todo(
+          todoText: addTodoController.text,
+          categorySet: CategorySet(
+              categoryColor: categoryColor, categoryName: categoryString),
+          todoState: false,
+          deadline: taskDay);
+      // 입력후 텍스트필드 초기화
       addTodoController.text = '';
       Get.back();
       setState(() {});
@@ -242,14 +376,16 @@ class _TodoListPageState extends State<TodoListPage> {
 
   // 카테고리 선택 액션 시트
   actionSheet() {
+    // 액션시트
     showCupertinoModalPopup(
       context: context,
       builder: (context) => CupertinoActionSheet(
-        title: Row(
+        title: const Row(
           children: [
-            const Text('카테고리 선택'),
+            Text('카테고리 선택'),
           ],
         ),
+        // 카테고리 선택 버튼
         message: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
@@ -261,7 +397,8 @@ class _TodoListPageState extends State<TodoListPage> {
                 addTodoBottomSheet();
               },
               style: ElevatedButton.styleFrom(
-                  fixedSize: Size(30, 100), backgroundColor: Colors.grey[100]),
+                  fixedSize: const Size(30, 100),
+                  backgroundColor: Colors.grey[100]),
               child: Padding(
                 padding: const EdgeInsets.all(0),
                 child: Column(
@@ -284,7 +421,8 @@ class _TodoListPageState extends State<TodoListPage> {
                 addTodoBottomSheet();
               },
               style: ElevatedButton.styleFrom(
-                  fixedSize: Size(30, 100), backgroundColor: Colors.grey[100]),
+                  fixedSize: const Size(30, 100),
+                  backgroundColor: Colors.grey[100]),
               child: Padding(
                 padding: const EdgeInsets.all(0),
                 child: Column(
@@ -307,7 +445,8 @@ class _TodoListPageState extends State<TodoListPage> {
                 addTodoBottomSheet();
               },
               style: ElevatedButton.styleFrom(
-                  fixedSize: Size(30, 100), backgroundColor: Colors.grey[100]),
+                  fixedSize: const Size(30, 100),
+                  backgroundColor: Colors.grey[100]),
               child: Padding(
                 padding: const EdgeInsets.all(0),
                 child: Column(
@@ -330,7 +469,8 @@ class _TodoListPageState extends State<TodoListPage> {
                 addTodoBottomSheet();
               },
               style: ElevatedButton.styleFrom(
-                  fixedSize: Size(30, 100), backgroundColor: Colors.grey[100]),
+                  fixedSize: const Size(30, 100),
+                  backgroundColor: Colors.grey[100]),
               child: Padding(
                 padding: const EdgeInsets.all(0),
                 child: Column(
@@ -350,31 +490,4 @@ class _TodoListPageState extends State<TodoListPage> {
       ),
     );
   }
-
-  calandarDialog() {
-    showCupertinoDialog(
-      context: context,
-      barrierDismissible: true, //showCupertinoDialog 영역 외에 눌렀을 때 닫게 해줌
-      builder: (BuildContext context) {
-        return Align(
-          alignment: Alignment
-              .bottomCenter, //특정 위젯이 어디에 정렬을 해야되는지 모르면 height값줘도 최대한에 사이즈를 먹음
-          child: Container(
-            color: Colors.white,
-            height: 300,
-            child: CupertinoDatePicker(
-              mode: CupertinoDatePickerMode
-                  .date, //CupertinoDatePickerMode에서 일시, 시간 등 고름
-              onDateTimeChanged: (DateTime date) {
-                print(DateTime.now());
-                var a = DateTime.now().toString().split(' ');
-                print(a[0]);
-                print(date);
-              },
-            ), //날짜)
-          ),
-        );
-      },
-    );
-  }
-}// ed
+} // ed

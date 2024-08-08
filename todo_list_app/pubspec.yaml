@@ -37,6 +37,8 @@ dependencies:
   cupertino_icons: ^1.0.6
   # Get
   get: ^4.6.6
+  # intl 데이터 형식 포매터
+  intl: ^0.19.0
 
 
 dev_dependencies:

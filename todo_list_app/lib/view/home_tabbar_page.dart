@@ -39,6 +39,7 @@ class _HomeTabbarPageState extends State<HomeTabbarPage>
         centerTitle: false,
       ),
       body: TabBarView(
+        physics: const NeverScrollableScrollPhysics(),
         controller: controller,
         children: const [
           TodoListPage(),
@@ -48,8 +49,22 @@ class _HomeTabbarPageState extends State<HomeTabbarPage>
         ],
       ),
       drawer: Drawer(
+        backgroundColor: Colors.amber[50],
         child: ListView(
+          padding: EdgeInsets.zero,
           children: [
+            Container(
+              height: 200,
+              color: const Color.fromRGBO(189, 187, 251, 1),
+              alignment: Alignment.bottomLeft,
+              child: Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: const CircleAvatar(
+                  backgroundImage: AssetImage('images/login.png'),
+                  radius: 40,
+                ),
+              ),
+            ),
             ListTile(
               title: const Text('로그아웃'),
               onTap: () {
@@ -63,6 +78,7 @@ class _HomeTabbarPageState extends State<HomeTabbarPage>
         color: Colors.amberAccent,
         height: 100,
         child: TabBar(
+          
           controller: controller,
           labelColor: const Color.fromARGB(255, 23, 7, 96),
           unselectedLabelColor: Colors.grey[600],

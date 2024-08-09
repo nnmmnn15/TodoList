@@ -24,56 +24,108 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text('To Do List'),
-            Image.asset(
-              'images/todolist.png',
-              width: 250,
-            ),
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        backgroundColor: Colors.amber[100],
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(40.0),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 50),
+                    child: Text(
+                      'To Do List',
+                      style: TextStyle(fontSize: 50),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 50),
+                    child: Image.asset(
+                      'images/todolist.png',
+                      width: 250,
+                    ),
+                  ),
 
-            // 아이디 비밀번호 입력란
-            TextField(
-              controller: idController,
-              decoration: const InputDecoration(
-                filled: true,
-                fillColor: Colors.grey,
-                labelText: '아이디를 입력하세요',
-                labelStyle: TextStyle(color: Colors.white),
+                  // 아이디 비밀번호 입력란
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: TextField(
+                      style: const TextStyle(color: Colors.white),
+                      controller: idController,
+                      decoration: const InputDecoration(
+                        
+                        enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10))),
+                        focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10))),
+                        filled: true,
+                        fillColor: Color.fromARGB(255, 52, 31, 148),
+                        labelText: '아이디를 입력하세요',
+                        labelStyle: TextStyle(color: Colors.white),
+                        counterStyle: TextStyle(color: Colors.white)
+                      ),
+                    ),
+                  ),
+                  TextField(
+                    style: const TextStyle(color: Colors.white),
+                    controller: pwController,
+                    obscureText: true,
+                    decoration: const InputDecoration(
+                      enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.all(Radius.circular(10))),
+                      focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.all(Radius.circular(10))),
+                      filled: true,
+                      fillColor: Color.fromARGB(255, 52, 31, 148),
+                      labelText: '비밀번호를 입력하세요',
+                      labelStyle: TextStyle(color: Colors.white),
+                    ),
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Column(
+                      children: [
+                        ElevatedButton(
+                          onPressed: () => checkUser(),
+                          style: ElevatedButton.styleFrom(
+                              fixedSize: const Size(100, 40)),
+                          child: const Text('로그인'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            Get.to(() => const SignUpPage());
+                          },
+                          style: ElevatedButton.styleFrom(
+                              fixedSize: const Size(100, 40)),
+                          child: const Text('회원가입'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
-            TextField(
-              controller: pwController,
-              obscureText: true,
-              decoration: const InputDecoration(
-                filled: true,
-                fillColor: Colors.grey,
-                labelText: '비밀번호를 입력하세요',
-                labelStyle: TextStyle(color: Colors.white),
-              ),
-            ),
-
-            ElevatedButton(
-              onPressed: () => checkUser(),
-              style: ElevatedButton.styleFrom(fixedSize: const Size(100, 40)),
-              child: const Text('로그인'),
-            ),
-            ElevatedButton(
-              onPressed: () => Get.to(()=>const SignUpPage()),
-              style: ElevatedButton.styleFrom(fixedSize: const Size(100, 40)),
-              child: const Text('회원가입'),
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
 
   checkUser() {
-    for (int userIndex = 0; userIndex < UserList.userIdList.length; userIndex++) {
+    for (int userIndex = 0;
+        userIndex < UserList.userIdList.length;
+        userIndex++) {
       if (idController.text.trim() == UserList.userIdList[userIndex] &&
           pwController.text.trim() == UserList.userPwList[userIndex]) {
         Get.offAll(

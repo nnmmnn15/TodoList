@@ -49,7 +49,7 @@ class _HomeTabbarPageState extends State<HomeTabbarPage>
         ],
       ),
       drawer: Drawer(
-        backgroundColor: Colors.amber[50],
+        backgroundColor: const Color.fromRGBO(255, 240, 195, 1),
         child: ListView(
           padding: EdgeInsets.zero,
           children: [

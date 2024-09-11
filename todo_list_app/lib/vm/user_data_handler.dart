@@ -9,14 +9,14 @@ class UserDataHandler {
   Future<List<dynamic>> checkUser(String id, String pw) async {
     final Database db = await handler.initializeDB();
     int idCheck = 0;
-    int idSeq = 0;
+    dynamic idSeq = 0;
     final List<Map<String, Object?>> queryResult = await db.rawQuery("""
         SELECT
             seq, count(id) as id 
         FROM 
             user 
         WHERE
-            id = ? and password = ?
+            id = ? and pw = ?
     """, [id, pw]);
 
     queryResult.map(

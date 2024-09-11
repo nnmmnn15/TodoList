@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:todo_list_app/model/empty/user_list.dart';
 import 'package:todo_list_app/view/home_tabbar_page.dart';
 import 'package:todo_list_app/view/login/sign_up_page.dart';
+import 'package:todo_list_app/vm/user_data_handler.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -15,11 +17,16 @@ class _LoginPageState extends State<LoginPage> {
   late TextEditingController idController;
   late TextEditingController pwController;
 
+  final GetStorage box = GetStorage();
+
+  late UserDataHandler handler;
+
   @override
   void initState() {
     super.initState();
     idController = TextEditingController();
     pwController = TextEditingController();
+    handler = UserDataHandler();
   }
 
   @override
@@ -120,20 +127,33 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  checkUser() {
-    for (int userIndex = 0;
-        userIndex < UserList.userIdList.length;
-        userIndex++) {
-      if (idController.text.trim() == UserList.userIdList[userIndex] &&
-          pwController.text.trim() == UserList.userPwList[userIndex]) {
-        Get.offAll(
-          () => const HomeTabbarPage(),
-          arguments: userIndex,
-        );
-        return;
-      }
+  checkUser() async {
+    List signInCheck = await handler.checkUser(
+        idController.text.trim(), pwController.text.trim());
+
+    if (signInCheck[0] == 1) {
+      box.write('nmcTodoUserSeq', signInCheck[1]);
+      Get.offAll(
+        () => const HomeTabbarPage(),
+      );
+    } else {
+      errorSnackBar('아이디 또는 비밀번호가 일치하지 않습니다');
     }
-    errorSnackBar('아이디 또는 비밀번호가 일치하지 않습니다');
+
+    // for (int userIndex = 0;
+    //     userIndex < UserList.userIdList.length;
+    //     userIndex++) {
+    //   if (idController.text.trim() == UserList.userIdList[userIndex] &&
+    //       pwController.text.trim() == UserList.userPwList[userIndex]) {
+    //     // user seq 저장
+
+    //     Get.offAll(
+    //       () => const HomeTabbarPage(),
+    //       arguments: userIndex,
+    //     );
+    //     return;
+    //   }
+    // }
   }
 
   errorSnackBar(errorMessage) {

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:todo_list_app/model/empty/category_set.dart';
 import 'package:todo_list_app/model/empty/todo.dart';
 import 'package:todo_list_app/model/empty/user_list.dart';
@@ -13,7 +14,9 @@ class TodoListPage extends StatefulWidget {
 }
 
 class _TodoListPageState extends State<TodoListPage> {
+  // 지워야함
   var userIndex = Get.arguments ?? 0;
+  final GetStorage box = GetStorage();
 
   late TextEditingController addTodoController;
   late Color categoryColor;
@@ -25,6 +28,7 @@ class _TodoListPageState extends State<TodoListPage> {
 
   @override
   void initState() {
+    print(box.read("nmcTodoUserSeq"));
     super.initState();
     addTodoController = TextEditingController();
     now = DateTime.now();

@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:todo_list_app/model/category_set.dart';
-import 'package:todo_list_app/model/todo.dart';
-import 'package:todo_list_app/model/user_list.dart';
+import 'package:todo_list_app/model/empty/category_set.dart';
+import 'package:todo_list_app/model/empty/todo.dart';
+import 'package:todo_list_app/model/empty/user_list.dart';
 
 class TodoListPage extends StatefulWidget {
   const TodoListPage({super.key});
@@ -28,11 +28,14 @@ class _TodoListPageState extends State<TodoListPage> {
     super.initState();
     addTodoController = TextEditingController();
     now = DateTime.now();
+    categoryColor = Colors.amber;
+    categoryString = "";
     sortTodoList();
   }
 
-  sortTodoList(){
-    UserList.todoDataList[userIndex].todoList.sort((a, b) => a.deadline.compareTo(b.deadline));
+  sortTodoList() {
+    UserList.todoDataList[userIndex].todoList
+        .sort((a, b) => a.deadline.compareTo(b.deadline));
   }
 
   @override
@@ -223,7 +226,9 @@ class _TodoListPageState extends State<TodoListPage> {
       // 플로팅 버튼
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+          // addTodoBottomSheet();
           actionSheet();
+          // popCategory();
           addTodoController.text = '';
           now = DateTime.now();
           taskDay = DateTime(now.year, now.month, now.day);
@@ -400,6 +405,7 @@ class _TodoListPageState extends State<TodoListPage> {
               onPressed: () {
                 categoryColor = Colors.deepPurple[100]!;
                 categoryString = '심부름';
+                print(1);
                 Get.back();
                 addTodoBottomSheet();
               },
@@ -497,4 +503,39 @@ class _TodoListPageState extends State<TodoListPage> {
       ),
     );
   }
+
+  // popCategory() {
+  //   Get.dialog(
+  //     AlertDialog(
+  //       title: const Text(
+  //         '카테고리 선택',
+  //         style: TextStyle(fontSize: 14),
+  //       ),
+  //       content: TextButton(
+  //         onPressed: () {
+  //           categoryColor = Colors.deepPurple[100]!;
+  //           categoryString = '심부름';
+  //           Get.back();
+  //           addTodoBottomSheet();
+  //         },
+  //         style: ElevatedButton.styleFrom(
+  //             fixedSize: const Size(30, 100),
+  //             backgroundColor: Colors.grey[100]),
+  //         child: Padding(
+  //           padding: const EdgeInsets.all(0),
+  //           child: Column(
+  //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //             children: [
+  //               CircleAvatar(
+  //                 radius: 15,
+  //                 backgroundColor: Colors.deepPurple[100],
+  //               ),
+  //               const Text('심부름'),
+  //             ],
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 } // ed

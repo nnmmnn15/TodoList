@@ -32,7 +32,8 @@ class DatabaseHandler {
             task text,
             category text,
             state text,
-            delete text,
+            isdelete text,
+            deletedate text,
             primary key(user_seq, todoid))
         """); // 삭제일자 추가 할지?
       },

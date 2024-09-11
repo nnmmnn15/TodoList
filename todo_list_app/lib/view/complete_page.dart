@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:todo_list_app/model/user_list.dart';
+import 'package:todo_list_app/model/empty/user_list.dart';
 
 class CompletePage extends StatefulWidget {
   const CompletePage({super.key});
@@ -40,10 +40,10 @@ class _CompletePageState extends State<CompletePage> {
                 child: ListView.builder(
                   itemCount: UserList.todoDataList[userIndex].todoList.length,
                   itemBuilder: (context, index) {
-                    // 유저의 투두리스트 중 todoState가 true 인 경우에만 
+                    // 유저의 투두리스트 중 todoState가 true 인 경우에만
                     return UserList
                             .todoDataList[userIndex].todoList[index].todoState
-                            // 스와이프 시 삭제 동작
+                        // 스와이프 시 삭제 동작
                         ? Dismissible(
                             key: ValueKey(UserList
                                 .todoDataList[userIndex].todoList[index]),
@@ -91,7 +91,7 @@ class _CompletePageState extends State<CompletePage> {
                                 child: Container(
                                   decoration: const BoxDecoration(
                                       border: Border(
-                                        // 하단선
+                                          // 하단선
                                           bottom: BorderSide(
                                               color: Colors.black, width: 1))),
                                   child: Padding(
@@ -125,15 +125,16 @@ class _CompletePageState extends State<CompletePage> {
                                               UserList.todoDataList[userIndex]
                                                   .todoList[index].todoText,
                                               style: TextStyle(
-                                                decoration: UserList
-                                                        .todoDataList[userIndex]
-                                                        .todoList[index]
-                                                        .todoState
-                                                    ? TextDecoration.lineThrough
-                                                    : TextDecoration.none,
-                                                decorationThickness: 2,
-                                                fontSize: 18
-                                              ),
+                                                  decoration: UserList
+                                                          .todoDataList[
+                                                              userIndex]
+                                                          .todoList[index]
+                                                          .todoState
+                                                      ? TextDecoration
+                                                          .lineThrough
+                                                      : TextDecoration.none,
+                                                  decorationThickness: 2,
+                                                  fontSize: 18),
                                             ),
                                           ],
                                         ),

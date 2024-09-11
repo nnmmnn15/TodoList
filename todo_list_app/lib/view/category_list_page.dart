@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:todo_list_app/model/user_list.dart';
+import 'package:todo_list_app/model/empty/user_list.dart';
 
 class CategoryListPage extends StatefulWidget {
   const CategoryListPage({super.key});
@@ -163,17 +163,17 @@ class _CategoryListPageState extends State<CategoryListPage> {
                                                         .todoList[index]
                                                         .todoText,
                                                     style: TextStyle(
-                                                      decoration: UserList
-                                                              .todoDataList[
-                                                                  userIndex]
-                                                              .todoList[index]
-                                                              .todoState
-                                                          ? TextDecoration
-                                                              .lineThrough
-                                                          : TextDecoration.none,
-                                                      decorationThickness: 2,
-                                                      fontSize: 18
-                                                    ),
+                                                        decoration: UserList
+                                                                .todoDataList[
+                                                                    userIndex]
+                                                                .todoList[index]
+                                                                .todoState
+                                                            ? TextDecoration
+                                                                .lineThrough
+                                                            : TextDecoration
+                                                                .none,
+                                                        decorationThickness: 2,
+                                                        fontSize: 18),
                                                   ),
                                                   // 기간
                                                   Text(

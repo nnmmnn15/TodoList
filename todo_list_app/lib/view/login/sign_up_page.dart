@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:todo_list_app/model/user_data.dart';
-import 'package:todo_list_app/model/user_list.dart';
+import 'package:todo_list_app/model/user.dart';
+// import 'package:todo_list_app/model/empty/user_data.dart';
+// import 'package:todo_list_app/model/empty/user_list.dart';
+// import 'package:todo_list_app/model/user.dart';
 import 'package:todo_list_app/view/login/login_page.dart';
+import 'package:todo_list_app/vm/database_handler.dart';
+import 'package:todo_list_app/vm/user_data_handler.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -12,16 +16,22 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
+  late UserDataHandler handler;
+  late DatabaseHandler aa;
+
   late TextEditingController idController;
   late TextEditingController pwController;
   late TextEditingController pwCheckController;
+  late TextEditingController nameController;
 
   @override
   void initState() {
     super.initState();
+    handler = UserDataHandler();
     idController = TextEditingController();
     pwController = TextEditingController();
     pwCheckController = TextEditingController();
+    nameController = TextEditingController();
   }
 
   @override
@@ -45,61 +55,17 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                   ),
                   // 아이디 비밀번호 입력란
-                  TextField(
-                    style: const TextStyle(color: Colors.white),
-                    controller: idController,
-                    decoration: const InputDecoration(
-                      enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide.none,
-                          borderRadius: BorderRadius.all(Radius.circular(10))),
-                      focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide.none,
-                          borderRadius: BorderRadius.all(Radius.circular(10))),
-                      filled: true,
-                      fillColor: Color.fromARGB(255, 52, 31, 148),
-                      labelText: '아이디를 입력하세요',
-                      labelStyle: TextStyle(color: Colors.white),
-                    ),
-                  ),
+                  signUpTextField('아이디를 입력하세요', idController, false),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: TextField(
-                      style: const TextStyle(color: Colors.white),
-                      controller: pwController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide.none,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(10))),
-                        focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide.none,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(10))),
-                        filled: true,
-                        fillColor: Color.fromARGB(255, 52, 31, 148),
-                        labelText: '비밀번호를 입력하세요',
-                        labelStyle: TextStyle(color: Colors.white),
-                      ),
-                    ),
+                    child: signUpTextField('비밀번호를 입력하세요', pwController, true),
                   ),
-                  TextField(
-                    style: const TextStyle(color: Colors.white),
-                    controller: pwCheckController,
-                    obscureText: true,
-                    decoration: const InputDecoration(
-                      enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide.none,
-                          borderRadius: BorderRadius.all(Radius.circular(10))),
-                      focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide.none,
-                          borderRadius: BorderRadius.all(Radius.circular(10))),
-                      filled: true,
-                      fillColor: Color.fromARGB(255, 52, 31, 148),
-                      labelText: '비밀번호를 확인하세요',
-                      labelStyle: TextStyle(color: Colors.white),
-                    ),
+                  signUpTextField('비밀번호를 확인하세요', pwCheckController, true),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: signUpTextField('이름을 입력하세요', nameController, false),
                   ),
+                  // 버튼, buttons
                   Padding(
                     padding: const EdgeInsets.only(top: 30),
                     child: Column(
@@ -131,16 +97,22 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  signCheck() {
+  signCheck() async {
+    int idDuplication = await handler.signUpCheckUser(idController.text.trim());
     FocusScope.of(context).unfocus();
     if (idController.text.trim().isNotEmpty &&
         pwController.text.trim().isNotEmpty &&
         pwCheckController.text.trim().isNotEmpty) {
-      for (String id in UserList.userIdList) {
-        if (id == idController.text.trim()) {
-          errorSnackBar('아이디 중복');
-          return;
-        }
+      // for (String id in UserList.userIdList) {
+      //   if (id == idController.text.trim()) {
+      //     errorSnackBar('아이디 중복');
+      //     return;
+      //   }
+      // }
+      // 중복 체크!@
+      if (idDuplication >= 1) {
+        errorSnackBar('아이디 중복');
+        return;
       }
       if (pwController.text.trim() != pwCheckController.text.trim()) {
         errorSnackBar('비밀번호가 일치하지 않음');
@@ -151,9 +123,16 @@ class _SignUpPageState extends State<SignUpPage> {
       return;
     }
 
-    UserList.userIdList.add(idController.text.trim());
-    UserList.userPwList.add(pwController.text.trim());
-    UserList.todoDataList.add(UserData.init());
+    // UserList.userIdList.add(idController.text.trim());
+    // UserList.userPwList.add(pwController.text.trim());
+    // UserList.todoDataList.add(UserData.init());
+    // DB아이디 추가!@
+    User user = User(
+      id: idController.text.trim(),
+      pw: pwController.text.trim(),
+      name: nameController.text.trim(),
+    );
+    handler.insertUser(user);
 
     Get.back();
   }
@@ -166,6 +145,52 @@ class _SignUpPageState extends State<SignUpPage> {
       duration: const Duration(seconds: 2), // 애니메이션 시간
       backgroundColor: Colors.red[400],
       colorText: Colors.white,
+    );
+  }
+
+  strTextField(String hintLabel, TextEditingController controller) {
+    return TextField(
+      style: const TextStyle(color: Colors.white),
+      controller: controller,
+      decoration: InputDecoration(
+        enabledBorder: const UnderlineInputBorder(
+            borderSide: BorderSide.none,
+            borderRadius: BorderRadius.all(Radius.circular(10))),
+        focusedBorder: const UnderlineInputBorder(
+            borderSide: BorderSide.none,
+            borderRadius: BorderRadius.all(Radius.circular(10))),
+        errorBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.red),
+        ),
+        focusedErrorBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.red, width: 2.0),
+        ),
+        filled: true,
+        fillColor: const Color.fromARGB(255, 52, 31, 148),
+        labelText: hintLabel,
+        labelStyle: const TextStyle(color: Colors.white),
+      ),
+    );
+  }
+
+  signUpTextField(
+      String hintLabel, TextEditingController controller, bool isPw) {
+    return TextField(
+      style: const TextStyle(color: Colors.white),
+      controller: controller,
+      obscureText: isPw,
+      decoration: InputDecoration(
+        enabledBorder: const UnderlineInputBorder(
+            borderSide: BorderSide.none,
+            borderRadius: BorderRadius.all(Radius.circular(10))),
+        focusedBorder: const UnderlineInputBorder(
+            borderSide: BorderSide.none,
+            borderRadius: BorderRadius.all(Radius.circular(10))),
+        filled: true,
+        fillColor: const Color.fromARGB(255, 52, 31, 148),
+        labelText: hintLabel,
+        labelStyle: const TextStyle(color: Colors.white),
+      ),
     );
   }
 }

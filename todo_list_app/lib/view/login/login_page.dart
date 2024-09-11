@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:todo_list_app/model/user_list.dart';
+import 'package:todo_list_app/model/empty/user_list.dart';
 import 'package:todo_list_app/view/home_tabbar_page.dart';
 import 'package:todo_list_app/view/login/sign_up_page.dart';
 
@@ -57,21 +57,19 @@ class _LoginPageState extends State<LoginPage> {
                       style: const TextStyle(color: Colors.white),
                       controller: idController,
                       decoration: const InputDecoration(
-                        
-                        enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide.none,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(10))),
-                        focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide.none,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(10))),
-                        filled: true,
-                        fillColor: Color.fromARGB(255, 52, 31, 148),
-                        labelText: '아이디를 입력하세요',
-                        labelStyle: TextStyle(color: Colors.white),
-                        counterStyle: TextStyle(color: Colors.white)
-                      ),
+                          enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10))),
+                          focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10))),
+                          filled: true,
+                          fillColor: Color.fromARGB(255, 52, 31, 148),
+                          labelText: '아이디를 입력하세요',
+                          labelStyle: TextStyle(color: Colors.white),
+                          counterStyle: TextStyle(color: Colors.white)),
                     ),
                   ),
                   TextField(

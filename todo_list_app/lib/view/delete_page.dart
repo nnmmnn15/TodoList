@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:todo_list_app/model/user_list.dart';
+import 'package:todo_list_app/model/empty/user_list.dart';
 
 class DeletePage extends StatefulWidget {
   const DeletePage({super.key});
@@ -133,14 +133,16 @@ class _DeletePageState extends State<DeletePage> {
                                     Row(
                                       children: [
                                         IconButton(
-                                          onPressed: () => checkDialog(index, true),
+                                          onPressed: () =>
+                                              checkDialog(index, true),
                                           icon: Icon(
                                             Icons.send,
                                             color: Colors.blue,
                                           ),
                                         ),
                                         IconButton(
-                                          onPressed: () => checkDialog(index, false),
+                                          onPressed: () =>
+                                              checkDialog(index, false),
                                           icon: Icon(
                                             Icons.delete,
                                             color: Colors.red,

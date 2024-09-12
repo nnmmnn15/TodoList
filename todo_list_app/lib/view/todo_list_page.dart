@@ -28,19 +28,19 @@ class _TodoListPageState extends State<TodoListPage> {
 
   @override
   void initState() {
-    print(box.read("nmcTodoUserSeq"));
+    // print(box.read("nmcTodoUserSeq"));
     super.initState();
     addTodoController = TextEditingController();
     now = DateTime.now();
     categoryColor = Colors.amber;
     categoryString = "";
-    sortTodoList();
+    // sortTodoList();
   }
 
-  sortTodoList() {
-    UserList.todoDataList[userIndex].todoList
-        .sort((a, b) => a.deadline.compareTo(b.deadline));
-  }
+  // sortTodoList() {
+  //   UserList.todoDataList[userIndex].todoList
+  //       .sort((a, b) => a.deadline.compareTo(b.deadline));
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -179,13 +179,14 @@ class _TodoListPageState extends State<TodoListPage> {
                                                 ),
                                                 // 카테고리 색
                                                 Container(
-                                                  width: 10,
-                                                  color: UserList
-                                                      .todoDataList[userIndex]
-                                                      .todoList[index]
-                                                      .categorySet
-                                                      .categoryColor,
-                                                ),
+                                                    width: 10,
+                                                    color: Colors.blue[100]
+                                                    // UserList
+                                                    //     .todoDataList[userIndex]
+                                                    //     .todoList[index]
+                                                    //     .categorySet
+                                                    //     .categoryColor,
+                                                    ),
                                                 // 할일
                                                 Text(
                                                   UserList
@@ -355,7 +356,7 @@ class _TodoListPageState extends State<TodoListPage> {
       // 입력후 텍스트필드 초기화
       addTodoController.text = '';
       Get.back();
-      sortTodoList();
+      // sortTodoList();
       setState(() {});
     }
   }
@@ -374,7 +375,7 @@ class _TodoListPageState extends State<TodoListPage> {
       // 입력후 텍스트필드 초기화
       addTodoController.text = '';
       Get.back();
-      sortTodoList();
+      // sortTodoList();
       setState(() {});
     }
   }

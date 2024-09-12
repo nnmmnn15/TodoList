@@ -1,7 +1,7 @@
 // 데이터를 추가할 때
 class Todolist {
   int? userSeq;
-  String todoid;
+  int? todoid;
   String tododate;
   String task;
   String category;
@@ -11,7 +11,7 @@ class Todolist {
 
   Todolist({
     this.userSeq,
-    required this.todoid,
+    this.todoid,
     required this.tododate,
     required this.task,
     required this.category,

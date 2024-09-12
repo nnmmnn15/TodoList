@@ -1,24 +1,24 @@
 // 데이터를 읽어올때
 class Task {
   int? userSeq;
-  String todoid;
+  int? todoid;
   String tododate;
   String task;
   String category;
   String state;
   String isdelete;
-  String deletedate;
+  String? deletedate;
   String color;
 
   Task(
       {this.userSeq,
-      required this.todoid,
+      this.todoid,
       required this.tododate,
       required this.task,
       required this.category,
       required this.state,
       required this.isdelete,
-      required this.deletedate,
+      this.deletedate,
       required this.color});
 
   Task.fromMap(Map<String, dynamic> res)

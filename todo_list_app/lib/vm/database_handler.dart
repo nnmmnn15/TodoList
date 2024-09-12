@@ -26,15 +26,14 @@ class DatabaseHandler {
         """);
         await db.execute("""
           create table todolist (
+            todoid integer primary key autoincrement,
             user_seq integer,
-            todoid text,
             tododate text,
             task text,
             category text,
             state text,
             isdelete text,
-            deletedate text,
-            primary key(user_seq, todoid))
+            deletedate text)
         """); // 삭제일자 추가 할지?
       },
       version: 1,

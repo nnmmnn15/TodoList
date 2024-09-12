@@ -34,8 +34,12 @@ class _TodoListPageState extends State<TodoListPage> {
     super.initState();
     addTodoController = TextEditingController();
     now = DateTime.now();
+
+    // 나중에 지워야함
     categoryColor = Colors.amber;
     categoryString = "";
+    taskDay = now;
+
     handler = TodolistHandler();
   }
 

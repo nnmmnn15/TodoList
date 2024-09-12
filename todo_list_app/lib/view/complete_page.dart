@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 import 'package:todo_list_app/model/empty/user_list.dart';
+import 'package:todo_list_app/vm/todolist_handler.dart';
 
 class CompletePage extends StatefulWidget {
   const CompletePage({super.key});
@@ -10,7 +12,14 @@ class CompletePage extends StatefulWidget {
 }
 
 class _CompletePageState extends State<CompletePage> {
-  var userIndex = Get.arguments ?? 0;
+  // var userIndex = Get.arguments ?? 0;
+  late TodolistHandler handler;
+
+  @override
+  void initState() {
+    super.initState();
+    handler = TodolistHandler();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,57 +46,48 @@ class _CompletePageState extends State<CompletePage> {
               // 완료 목록 리스트 빌더
               // Flexible 은 남은공간을 모두 사용
               Flexible(
-                child: ListView.builder(
-                  itemCount: UserList.todoDataList[userIndex].todoList.length,
-                  itemBuilder: (context, index) {
-                    // 유저의 투두리스트 중 todoState가 true 인 경우에만
-                    return UserList
-                            .todoDataList[userIndex].todoList[index].todoState
-                        // 스와이프 시 삭제 동작
-                        ? Dismissible(
-                            key: ValueKey(UserList
-                                .todoDataList[userIndex].todoList[index]),
-                            direction: DismissDirection.endToStart,
-                            background: Container(
-                              color: Colors.red,
-                              alignment: Alignment.centerRight,
-                              child: const Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 15),
-                                child: Icon(
-                                  Icons.delete,
-                                  color: Colors.white,
+                child: FutureBuilder(
+                  future: handler.queryCompleteTask(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return ListView.builder(
+                        itemCount: snapshot.data!.length,
+                        itemBuilder: (context, index) {
+                          // 유저의 투두리스트 중 todoState가 true 인 경우에만
+                          return Slidable(
+                            endActionPane: ActionPane(
+                              extentRatio: .2, // 사이즈 최대 1
+                              motion: const BehindMotion(),
+                              children: [
+                                SlidableAction(
+                                  backgroundColor: Colors.red,
+                                  icon: Icons.delete,
+                                  onPressed: (context) async {
+                                    // 삭제 로직
+                                    await handler.updateTodolistDelete(
+                                        snapshot.data![index].todoid!,
+                                        snapshot.data![index].isdelete);
+                                    setState(() {});
+                                  },
                                 ),
-                              ),
+                              ],
                             ),
-                            // 삭제 동작(스와이프)시 실행
-                            onDismissed: (direction) {
-                              // 삭제 리스트에 추가
-                              UserList.todoDataList[userIndex].deleteList.add(
-                                  UserList
-                                      .todoDataList[userIndex].todoList[index]);
-                              // 투두리스트에서 제거
-                              UserList.todoDataList[userIndex].todoList.remove(
-                                  UserList
-                                      .todoDataList[userIndex].todoList[index]);
-                              setState(() {});
-                            },
                             // 데이터 보여지는곳
                             child: Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 20),
                               // 할일 완료 제스쳐
                               child: GestureDetector(
-                                onDoubleTap: () {
-                                  UserList.todoDataList[userIndex]
-                                          .todoList[index].todoState =
-                                      !UserList.todoDataList[userIndex]
-                                          .todoList[index].todoState;
+                                onDoubleTap: () async {
+                                  await handler.updateTodolistState(
+                                      snapshot.data![index].todoid!,
+                                      snapshot.data![index].state);
                                   setState(() {});
                                 },
                                 /*
-                                데이터가 담긴 Container
-                                꾸미는 공간 
-                                */
+                                  데이터가 담긴 Container
+                                  꾸미는 공간 
+                                  */
                                 child: Container(
                                   decoration: const BoxDecoration(
                                       border: Border(
@@ -105,31 +105,22 @@ class _CompletePageState extends State<CompletePage> {
                                             // 카테고리 이름
                                             SizedBox(
                                               width: 40,
-                                              child: Text(UserList
-                                                  .todoDataList[userIndex]
-                                                  .todoList[index]
-                                                  .categorySet
-                                                  .categoryName),
+                                              child: Text(snapshot
+                                                  .data![index].category),
                                             ),
                                             // 카테고리 색상
                                             Container(
                                               width: 10,
-                                              color: UserList
-                                                  .todoDataList[userIndex]
-                                                  .todoList[index]
-                                                  .categorySet
-                                                  .categoryColor,
+                                              color: Colors.green[200],
                                             ),
                                             // 할일
                                             Text(
-                                              UserList.todoDataList[userIndex]
-                                                  .todoList[index].todoText,
+                                              snapshot.data![index].task,
                                               style: TextStyle(
-                                                  decoration: UserList
-                                                          .todoDataList[
-                                                              userIndex]
-                                                          .todoList[index]
-                                                          .todoState
+                                                  decoration: snapshot
+                                                              .data![index]
+                                                              .state ==
+                                                          "완료"
                                                       ? TextDecoration
                                                           .lineThrough
                                                       : TextDecoration.none,
@@ -144,9 +135,14 @@ class _CompletePageState extends State<CompletePage> {
                                 ),
                               ),
                             ),
-                          )
-                        // 할일이 완료되지 않은 값을 받았을때 빈 박스
-                        : const SizedBox.shrink();
+                          );
+                        },
+                      );
+                    } else {
+                      return const Center(
+                        child: Text('완료한 일이 없습니다'),
+                      );
+                    }
                   },
                 ),
               ),

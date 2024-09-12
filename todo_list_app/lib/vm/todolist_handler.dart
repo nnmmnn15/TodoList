@@ -55,8 +55,25 @@ class TodolistHandler {
         WHERE 
           todolist.user_seq = ? AND category.user_seq =? AND
           category.name = todolist.category AND
-          isdelete = 버림"      
+          isdelete = "버림"      
       """, [box.read('nmcTodoUserSeq'), box.read('nmcTodoUserSeq')]);
+    return queryResults.map((e) => Task.fromMap(e)).toList();
+  }
+
+  Future<List<Task>> queryCompleteTask() async {
+    final Database db = await handler.initializeDB();
+    final List<Map<String, Object?>> queryResults = await db.rawQuery("""
+        SELECT *
+        FROM 
+          todolist, category
+        WHERE 
+          todolist.user_seq = ? AND category.user_seq =? AND
+          category.name = todolist.category AND
+          isdelete = "안버림" AND
+          state = "완료"
+      """, [box.read('nmcTodoUserSeq'), box.read('nmcTodoUserSeq')]);
+
+    print(queryResults);
     return queryResults.map((e) => Task.fromMap(e)).toList();
   }
 }

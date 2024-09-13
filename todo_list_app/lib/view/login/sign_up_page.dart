@@ -103,13 +103,6 @@ class _SignUpPageState extends State<SignUpPage> {
     if (idController.text.trim().isNotEmpty &&
         pwController.text.trim().isNotEmpty &&
         pwCheckController.text.trim().isNotEmpty) {
-      // for (String id in UserList.userIdList) {
-      //   if (id == idController.text.trim()) {
-      //     errorSnackBar('아이디 중복');
-      //     return;
-      //   }
-      // }
-      // 중복 체크!@
       if (idDuplication >= 1) {
         errorSnackBar('아이디 중복');
         return;
@@ -123,16 +116,15 @@ class _SignUpPageState extends State<SignUpPage> {
       return;
     }
 
-    // UserList.userIdList.add(idController.text.trim());
-    // UserList.userPwList.add(pwController.text.trim());
-    // UserList.todoDataList.add(UserData.init());
     // DB아이디 추가!@
     User user = User(
       id: idController.text.trim(),
       pw: pwController.text.trim(),
       name: nameController.text.trim(),
     );
-    handler.insertUser(user);
+    await handler.insertUser(user);
+    int seq = await handler.selectSeq(idController.text.trim());
+    await handler.insertInitCategory(seq);
 
     Get.back();
   }

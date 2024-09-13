@@ -1,7 +1,6 @@
 import 'package:get_storage/get_storage.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:todo_list_app/model/task.dart';
-// import 'package:todo_list_app/model/todolist.dart';
 import 'package:todo_list_app/vm/database_handler.dart';
 
 class TodolistHandler {
@@ -72,8 +71,6 @@ class TodolistHandler {
           isdelete = "안버림" AND
           state = "완료"
       """, [box.read('nmcTodoUserSeq'), box.read('nmcTodoUserSeq')]);
-
-    print(queryResults);
     return queryResults.map((e) => Task.fromMap(e)).toList();
   }
 }

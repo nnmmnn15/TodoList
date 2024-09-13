@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:todo_list_app/model/empty/user_list.dart';
 import 'package:todo_list_app/view/home_tabbar_page.dart';
 import 'package:todo_list_app/view/login/sign_up_page.dart';
 import 'package:todo_list_app/vm/user_data_handler.dart';

@@ -64,7 +64,7 @@ class UserDataHandler {
   // 회원가입시 초기 카테고리 추가 (중요, 일상)
   insertInitCategory(int seq) async {
     final Database db = await handler.initializeDB();
-    final result = await db.rawInsert("""
+    await db.rawInsert("""
     INSERT INTO category
     VALUES
       (?, "일상", "하늘"),

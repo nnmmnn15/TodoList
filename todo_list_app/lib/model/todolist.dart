@@ -5,9 +5,9 @@ class Todolist {
   String tododate;
   String task;
   String category;
-  String state;
-  String isdelete;
-  String deletedate;
+  String? state;
+  String? isdelete;
+  String? deletedate;
 
   Todolist({
     this.userSeq,
@@ -15,9 +15,9 @@ class Todolist {
     required this.tododate,
     required this.task,
     required this.category,
-    required this.state,
-    required this.isdelete,
-    required this.deletedate,
+    this.state,
+    this.isdelete,
+    this.deletedate,
   });
 
   Todolist.fromMap(Map<String, dynamic> res)

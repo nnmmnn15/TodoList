@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
+import 'package:todo_list_app/vm/convert_color.dart';
 import 'package:todo_list_app/vm/todolist_handler.dart';
 
 class DeletePage extends StatefulWidget {
@@ -13,11 +14,13 @@ class DeletePage extends StatefulWidget {
 class _DeletePageState extends State<DeletePage> {
   // var userIndex = Get.arguments ?? 0;
   late TodolistHandler handler;
+  late ConvertColor convertColor;
 
   @override
   void initState() {
     super.initState();
     handler = TodolistHandler();
+    convertColor = ConvertColor();
   }
 
   @override
@@ -46,8 +49,12 @@ class _DeletePageState extends State<DeletePage> {
                             backgroundColor: Colors.blue,
                             icon: Icons.send,
                             label: '복구',
-                            onPressed: (context) {
+                            onPressed: (context) async {
                               // 되돌리기, 복구 로직
+
+                              checkDialog(true, snapshot.data![index].todoid,
+                                  snapshot.data![index].isdelete);
+                              setState(() {});
                             },
                           ),
                         ],
@@ -61,7 +68,8 @@ class _DeletePageState extends State<DeletePage> {
                             icon: Icons.delete,
                             onPressed: (context) async {
                               // 완전 삭제 로직 alert 창띄우기
-
+                              checkDialog(false, snapshot.data![index].todoid,
+                                  snapshot.data![index].isdelete);
                               setState(() {});
                             },
                           ),
@@ -96,7 +104,8 @@ class _DeletePageState extends State<DeletePage> {
                                         // 카테고리 색상
                                         Container(
                                           width: 10,
-                                          color: Colors.black,
+                                          color: convertColor.strToColor(
+                                              snapshot.data![index].color),
                                           // 색상 변경해야함
                                         ),
                                         // 할일
@@ -122,16 +131,20 @@ class _DeletePageState extends State<DeletePage> {
                                     Row(
                                       children: [
                                         IconButton(
-                                          onPressed: () =>
-                                              checkDialog(index, true),
+                                          onPressed: () => checkDialog(
+                                              true,
+                                              snapshot.data![index].todoid,
+                                              snapshot.data![index].isdelete),
                                           icon: Icon(
                                             Icons.send,
                                             color: Colors.blue,
                                           ),
                                         ),
                                         IconButton(
-                                          onPressed: () =>
-                                              checkDialog(index, false),
+                                          onPressed: () => checkDialog(
+                                              false,
+                                              snapshot.data![index].todoid,
+                                              snapshot.data![index].isdelete),
                                           icon: Icon(
                                             Icons.delete,
                                             color: Colors.red,
@@ -161,7 +174,7 @@ class _DeletePageState extends State<DeletePage> {
   }
 
   // check는 삭제와 되돌리기여부 true 가 되돌림
-  checkDialog(index, bool check) {
+  checkDialog(bool check, id, isdelete) {
     Get.defaultDialog(
       title: check ? "되돌리기" : "경고",
       middleText: check ? '정말로 되돌리시겠습니까?' : '정말로 삭제하시겠습니까?',
@@ -169,7 +182,7 @@ class _DeletePageState extends State<DeletePage> {
       barrierDismissible: false,
       actions: [
         TextButton(
-          onPressed: () {
+          onPressed: () async {
             // 되돌리는 로직
             // if (check) {
             //   UserList.todoDataList[userIndex].todoList
@@ -177,6 +190,12 @@ class _DeletePageState extends State<DeletePage> {
             // }
             // UserList.todoDataList[userIndex].deleteList
             //     .remove(UserList.todoDataList[userIndex].deleteList[index]);
+            if (check) {
+              await handler.updateTodolistDelete(id, isdelete);
+            } else {
+              // 완전 삭제
+              await handler.deleteTask(id);
+            }
             Get.back();
             setState(() {});
           },

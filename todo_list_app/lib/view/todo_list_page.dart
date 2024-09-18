@@ -3,6 +3,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:todo_list_app/model/todolist.dart';
+import 'package:todo_list_app/view/modify_category.dart';
 import 'package:todo_list_app/vm/category_handler.dart';
 import 'package:todo_list_app/vm/convert_color.dart';
 import 'package:todo_list_app/vm/todolist_handler.dart';
@@ -25,24 +26,25 @@ class _TodoListPageState extends State<TodoListPage> {
   final GetStorage box = GetStorage();
 
   late TextEditingController addTodoController;
+  late TextEditingController categoryController;
   late Color categoryColor;
   late String categoryString;
   late DateTime taskDay; // 일정 날짜
   late DateTime now; // 현재 날짜
   late bool addCheck; // 추가, 수정 확인용 true일때 추가
-  late int updateIndex; // 수정시 참고할 인덱스
 
   @override
   void initState() {
     // print(box.read("nmcTodoUserSeq"));
     super.initState();
     addTodoController = TextEditingController();
+    categoryController = TextEditingController();
     now = DateTime.now();
 
     // 나중에 지워야함
-    categoryColor = Colors.amber;
-    categoryString = "";
-    taskDay = now;
+    // categoryColor = Colors.amber;
+    // categoryString = "";
+    // taskDay = now;
 
     handler = TodolistHandler();
     categoryHandler = CategoryHandler();
@@ -155,7 +157,6 @@ class _TodoListPageState extends State<TodoListPage> {
                                         categoryString =
                                             snapshot.data![index].category;
                                         addCheck = false;
-                                        updateIndex = index;
                                         addTodoBottomSheet(
                                             snapshot.data![index].todoid);
                                       },
@@ -251,9 +252,7 @@ class _TodoListPageState extends State<TodoListPage> {
       // 플로팅 버튼
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          addTodoBottomSheet();
-          // actionSheet();
-          // popCategory();
+          popCategory();
           addTodoController.text = '';
           now = DateTime.now();
           taskDay = DateTime(now.year, now.month, now.day);
@@ -369,13 +368,6 @@ class _TodoListPageState extends State<TodoListPage> {
     if (addTodoController.text.trim().isEmpty) {
       errorSnackBar('할일을 작성해주세요');
     } else {
-      // 추가동작
-      // UserList.todoDataList[userIndex].todoList.add(Todo(
-      //     todoText: addTodoController.text,
-      //     categorySet: CategorySet(
-      //         categoryColor: categoryColor, categoryName: categoryString),
-      //     todoState: false,
-      //     deadline: taskDay));
       Todolist todolist = Todolist(
         userSeq: box.read("nmcTodoUserSeq"),
         tododate:
@@ -405,14 +397,6 @@ class _TodoListPageState extends State<TodoListPage> {
     if (addTodoController.text.trim().isEmpty) {
       errorSnackBar('할일을 작성해주세요');
     } else {
-      // 수정동작
-      // UserList.todoDataList[userIndex].todoList[updateIndex] = Todo(
-      //     todoText: addTodoController.text,
-      //     categorySet: CategorySet(
-      //         categoryColor: categoryColor, categoryName: categoryString),
-      //     todoState: false,
-      //     deadline: taskDay);
-      print(addTodoController.text);
       Todolist todolist = Todolist(
         todoid: todoid,
         userSeq: box.read("nmcTodoUserSeq"),
@@ -447,137 +431,40 @@ class _TodoListPageState extends State<TodoListPage> {
     );
   }
 
-  // // 카테고리 선택 액션 시트
-  // actionSheet() {
-  //   // 액션시트
-  //   showCupertinoModalPopup(
-  //     context: context,
-  //     builder: (context) => CupertinoActionSheet(
-  //       title: const Row(
-  //         children: [
-  //           Text('카테고리 선택'),
-  //         ],
-  //       ),
-  //       // 카테고리 선택 버튼
-
-  //       message: Row(
-  //         mainAxisAlignment: MainAxisAlignment.spaceAround,
-  //         children: [
-  //           TextButton(
-  //             onPressed: () {
-  //               categoryColor = Colors.deepPurple[100]!;
-  //               categoryString = '심부름';
-  //               Get.back();
-  //               // addTodoBottomSheet();
-  //             },
-  //             style: ElevatedButton.styleFrom(
-  //                 fixedSize: const Size(30, 100),
-  //                 backgroundColor: Colors.grey[100]),
-  //             child: Padding(
-  //               padding: const EdgeInsets.all(0),
-  //               child: Column(
-  //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                 children: [
-  //                   CircleAvatar(
-  //                     radius: 15,
-  //                     backgroundColor: Colors.deepPurple[100],
-  //                   ),
-  //                   const Text('심부름'),
-  //                 ],
-  //               ),
-  //             ),
-  //           ),
-  //           TextButton(
-  //             onPressed: () {
-  //               categoryColor = Colors.blue[100]!;
-  //               categoryString = '약속';
-  //               Get.back();
-  //               addTodoBottomSheet();
-  //             },
-  //             style: ElevatedButton.styleFrom(
-  //                 fixedSize: const Size(30, 100),
-  //                 backgroundColor: Colors.grey[100]),
-  //             child: Padding(
-  //               padding: const EdgeInsets.all(0),
-  //               child: Column(
-  //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                 children: [
-  //                   CircleAvatar(
-  //                     radius: 15,
-  //                     backgroundColor: Colors.blue[100],
-  //                   ),
-  //                   const Text('약속'),
-  //                 ],
-  //               ),
-  //             ),
-  //           ),
-  //           TextButton(
-  //             onPressed: () {
-  //               categoryColor = Colors.green[100]!;
-  //               categoryString = '일상';
-  //               Get.back();
-  //               addTodoBottomSheet();
-  //             },
-  //             style: ElevatedButton.styleFrom(
-  //                 fixedSize: const Size(30, 100),
-  //                 backgroundColor: Colors.grey[100]),
-  //             child: Padding(
-  //               padding: const EdgeInsets.all(0),
-  //               child: Column(
-  //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                 children: [
-  //                   CircleAvatar(
-  //                     radius: 15,
-  //                     backgroundColor: Colors.green[100],
-  //                   ),
-  //                   const Text('일상'),
-  //                 ],
-  //               ),
-  //             ),
-  //           ),
-  //           TextButton(
-  //             onPressed: () {
-  //               categoryColor = Colors.red[100]!;
-  //               categoryString = '중요일정';
-  //               Get.back();
-  //               addTodoBottomSheet();
-  //             },
-  //             style: ElevatedButton.styleFrom(
-  //                 fixedSize: const Size(30, 100),
-  //                 backgroundColor: Colors.grey[100]),
-  //             child: Padding(
-  //               padding: const EdgeInsets.all(0),
-  //               child: Column(
-  //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                 children: [
-  //                   CircleAvatar(
-  //                     radius: 15,
-  //                     backgroundColor: Colors.red[100],
-  //                   ),
-  //                   const Text('중요일정'),
-  //                 ],
-  //               ),
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
-
   popCategory([int? todoid]) {
     Get.dialog(
       AlertDialog(
-        title: const Text(
-          '카테고리 선택',
-          style: TextStyle(fontSize: 14),
+        title: SizedBox(
+          width: MediaQuery.of(context).size.width,
+          height: 45,
+          child: Stack(
+            children: [
+              const Positioned(
+                child: Text(
+                  '카테고리 선택',
+                  style: TextStyle(fontSize: 18),
+                ),
+              ),
+              Positioned(
+                right: 0,
+                child: TextButton(
+                  onPressed: () {
+                    Get.back();
+                    Get.to(() => const ModifyCategory())!.then(
+                      (value) => popCategory(),
+                    );
+                  },
+                  child: const Text('카테고리 편집'),
+                ),
+              )
+            ],
+          ),
         ),
         content: FutureBuilder(
           future: categoryHandler.queryCategory(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               return SizedBox(
-                // 사이즈 문제
                 width: MediaQuery.of(context).size.width * 0.7,
                 height: MediaQuery.of(context).size.width * 0.3,
                 child: GridView.builder(
@@ -624,6 +511,7 @@ class _TodoListPageState extends State<TodoListPage> {
             }
           },
         ),
+        backgroundColor: Colors.white,
       ),
     );
   }

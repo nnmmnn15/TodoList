@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:todo_list_app/vm/convert_color.dart';
 import 'package:todo_list_app/vm/todolist_handler.dart';
 
 class CompletePage extends StatefulWidget {
@@ -10,13 +11,14 @@ class CompletePage extends StatefulWidget {
 }
 
 class _CompletePageState extends State<CompletePage> {
-  // var userIndex = Get.arguments ?? 0;
   late TodolistHandler handler;
+  late ConvertColor convertColor;
 
   @override
   void initState() {
     super.initState();
     handler = TodolistHandler();
+    convertColor = ConvertColor();
   }
 
   @override
@@ -109,7 +111,8 @@ class _CompletePageState extends State<CompletePage> {
                                             // 카테고리 색상
                                             Container(
                                               width: 10,
-                                              color: Colors.green[200],
+                                              color: convertColor.strToColor(
+                                                  snapshot.data![index].color),
                                             ),
                                             // 할일
                                             Text(

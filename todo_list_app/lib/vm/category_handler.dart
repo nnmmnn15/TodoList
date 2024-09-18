@@ -14,6 +14,7 @@ class CategoryHandler {
     INSERT INTO category
     VALUES (?, ?, ?)
     """, [category.userSeq, category.name, category.color]);
+    return queryResult;
   }
 
   // 카테고리 정보 가져오기
@@ -25,7 +26,9 @@ class CategoryHandler {
           category
         WHERE 
           user_seq = ?
-      """, [box.read('nmcTodoUserSeq'), box.read('nmcTodoUserSeq')]);
+        ORDER BY
+          name
+      """, [box.read('nmcTodoUserSeq')]);
     return queryResults.map((e) => TodoCategory.fromMap(e)).toList();
   }
 }

@@ -81,7 +81,7 @@ class TodolistHandler {
   }
 
   // 버림 안버림 업데이트
-  Future<int> updateTodolistDelete(int todoId, String delete) async {
+  Future<int> updateTodolistDelete(int? todoId, String delete) async {
     delete = delete == "안버림" ? "버림" : "안버림";
     final Database db = await handler.initializeDB();
     final updateResults = await db.rawUpdate("""
@@ -103,9 +103,28 @@ class TodolistHandler {
         WHERE 
           todolist.user_seq = ? AND category.user_seq =? AND
           category.name = todolist.category AND
-          isdelete = "버림"      
+          isdelete = "버림" AND
+          deletedate IS NULL
       """, [box.read('nmcTodoUserSeq'), box.read('nmcTodoUserSeq')]);
     return queryResults.map((e) => Task.fromMap(e)).toList();
+  }
+
+  // 삭제목록 삭제
+  Future deleteTask(int? todoId) async {
+    DateTime now = DateTime.now();
+    final db = await handler.initializeDB();
+    String nowText =
+        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+    int result = await db.rawUpdate("""
+        UPDATE todolist 
+        SET
+          deletedate = ?
+        WHERE
+          todoid = ?
+
+    """, [nowText, todoId]);
+
+    return result;
   }
 
   // 완료 목록 가져오기

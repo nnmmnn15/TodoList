@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:get/get.dart';
-import 'package:todo_list_app/model/empty/user_list.dart';
 import 'package:todo_list_app/model/todo_category.dart';
 import 'package:todo_list_app/vm/category_handler.dart';
 import 'package:todo_list_app/vm/convert_color.dart';

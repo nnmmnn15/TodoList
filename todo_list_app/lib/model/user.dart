@@ -5,7 +5,7 @@ class User {
   String id;
   String pw;
   String name;
-  Uint8List? image;
+  Uint8List? profile;
 
   User({
     required this.id,
@@ -18,5 +18,5 @@ class User {
         id = res['id'],
         pw = res['pw'],
         name = res['name'],
-        image = res['image'];
+        profile = res['profile'];
 }

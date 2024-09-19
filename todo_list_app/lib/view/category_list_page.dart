@@ -30,12 +30,6 @@ class _CategoryListPageState extends State<CategoryListPage> {
     handler = TodolistHandler();
     convertColor = ConvertColor();
     categoryList = [];
-    categoryColor = [
-      Colors.deepPurple[100],
-      Colors.blue[100],
-      Colors.green[100],
-      Colors.red[100]
-    ];
 
     isReady = false;
     getData();

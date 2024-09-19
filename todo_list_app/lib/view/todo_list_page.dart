@@ -16,9 +16,6 @@ class TodoListPage extends StatefulWidget {
 }
 
 class _TodoListPageState extends State<TodoListPage> {
-  // 지워야함
-  // var userIndex = Get.arguments ?? 0;
-
   late TodolistHandler handler;
   late CategoryHandler categoryHandler;
   late ConvertColor convertColor;
@@ -41,11 +38,6 @@ class _TodoListPageState extends State<TodoListPage> {
     categoryController = TextEditingController();
     now = DateTime.now();
 
-    // 나중에 지워야함
-    // categoryColor = Colors.amber;
-    // categoryString = "";
-    // taskDay = now;
-
     handler = TodolistHandler();
     categoryHandler = CategoryHandler();
     convertColor = ConvertColor();
@@ -55,183 +47,192 @@ class _TodoListPageState extends State<TodoListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.amber[100],
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.only(top: 20),
-          child: Column(
-            children: [
-              // 할일 목록 todolist에 데이터가 있을때
-              FutureBuilder(
-                future: handler.queryTask(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return Flexible(
-                      child: ListView.builder(
-                        // 유저의 리스트 중 투두리스트의 길이 + 1
-                        // + 1 은 마지막에 일정 추가 버튼을 위함
-                        itemCount: snapshot.data!.length + 1,
-                        itemBuilder: (context, index) {
-                          // 마지막 위치의 여부 판단
-                          // 마지막 버튼은 일정 추가 버튼을 하기 위함
-                          return snapshot.data!.length == index
-                              ?
-                              // 마지막 문구 (추가버튼)
-                              TextButton(
-                                  onPressed: () {
-                                    // actionSheet();
-                                    popCategory();
-                                    addTodoController.text = '';
-                                    now = DateTime.now();
-                                    taskDay =
-                                        DateTime(now.year, now.month, now.day);
-                                    addCheck = true;
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              decoration: const BoxDecoration(
+                  border: Border(
+                      // 하단선
+                      bottom: BorderSide(color: Colors.black, width: 1))),
+              child: const Text(
+                '남은 할일',
+                style: TextStyle(fontSize: 24),
+              ),
+            ),
+          ),
+          // 할일 목록 todolist에 데이터가 있을때
+          FutureBuilder(
+            future: handler.queryTask(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Flexible(
+                  child: ListView.builder(
+                    // 유저의 리스트 중 투두리스트의 길이 + 1
+                    // + 1 은 마지막에 일정 추가 버튼을 위함
+                    itemCount: snapshot.data!.length + 1,
+                    itemBuilder: (context, index) {
+                      // 마지막 위치의 여부 판단
+                      // 마지막 버튼은 일정 추가 버튼을 하기 위함
+                      return snapshot.data!.length == index
+                          ?
+                          // 마지막 문구 (추가버튼)
+                          TextButton(
+                              onPressed: () {
+                                // actionSheet();
+                                popCategory();
+                                addTodoController.text = '';
+                                now = DateTime.now();
+                                taskDay =
+                                    DateTime(now.year, now.month, now.day);
+                                addCheck = true;
+                              },
+                              child: const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.add),
+                                  Text(
+                                    '일정을 추가하세요',
+                                  ),
+                                ],
+                              ),
+                            )
+                          :
+                          // To do list 데이터
+                          // 스와이프시 삭제
+                          Slidable(
+                              endActionPane: ActionPane(
+                                extentRatio: .2, // 사이즈 최대 1
+                                motion: const BehindMotion(),
+                                children: [
+                                  SlidableAction(
+                                    backgroundColor: Colors.red,
+                                    icon: Icons.delete,
+                                    onPressed: (context) async {
+                                      // 삭제 로직
+                                      await handler.updateTodolistDelete(
+                                          snapshot.data![index].todoid!,
+                                          snapshot.data![index].isdelete);
+                                      setState(() {});
+                                    },
+                                  ),
+                                ],
+                              ),
+                              // 데이터 보여지는곳
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 20),
+                                // 할일 완료 제스쳐
+                                child: GestureDetector(
+                                  // 더블 클릭시 상태변화
+                                  onDoubleTap: () async {
+                                    await handler.updateTodolistState(
+                                        snapshot.data![index].todoid!,
+                                        snapshot.data![index].state);
+                                    setState(() {});
                                   },
-                                  child: const Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(Icons.add),
-                                      Text(
-                                        '일정을 추가하세요',
-                                      ),
-                                    ],
-                                  ),
-                                )
-                              :
-                              // To do list 데이터
-                              // 스와이프시 삭제
-                              Slidable(
-                                  endActionPane: ActionPane(
-                                    extentRatio: .2, // 사이즈 최대 1
-                                    motion: const BehindMotion(),
-                                    children: [
-                                      SlidableAction(
-                                        backgroundColor: Colors.red,
-                                        icon: Icons.delete,
-                                        onPressed: (context) async {
-                                          // 삭제 로직
-                                          await handler.updateTodolistDelete(
-                                              snapshot.data![index].todoid!,
-                                              snapshot.data![index].isdelete);
-                                          setState(() {});
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                  // 데이터 보여지는곳
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 20),
-                                    // 할일 완료 제스쳐
-                                    child: GestureDetector(
-                                      // 더블 클릭시 상태변화
-                                      onDoubleTap: () async {
-                                        await handler.updateTodolistState(
-                                            snapshot.data![index].todoid!,
-                                            snapshot.data![index].state);
-                                        setState(() {});
-                                      },
-                                      // 한번 터치시 업데이트, 수정
-                                      onTap: () {
-                                        addTodoController.text =
-                                            snapshot.data![index].task;
-                                        taskDay = DateTime.parse(
-                                            snapshot.data![index].tododate);
-                                        categoryColor = convertColor.strToColor(
-                                            snapshot.data![index].color);
-                                        categoryString =
-                                            snapshot.data![index].category;
-                                        addCheck = false;
-                                        addTodoBottomSheet(
-                                            snapshot.data![index].todoid);
-                                      },
-                                      child: Container(
-                                        decoration: const BoxDecoration(
-                                            border: Border(
-                                                // 하단선
-                                                bottom: BorderSide(
-                                                    color: Colors.black,
-                                                    width: 1))),
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 10),
-                                          child: SizedBox(
-                                            height: 50,
-                                            child: Center(
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
+                                  // 한번 터치시 업데이트, 수정
+                                  onTap: () {
+                                    addTodoController.text =
+                                        snapshot.data![index].task;
+                                    taskDay = DateTime.parse(
+                                        snapshot.data![index].tododate);
+                                    categoryColor = convertColor.strToColor(
+                                        snapshot.data![index].color);
+                                    categoryString =
+                                        snapshot.data![index].category;
+                                    addCheck = false;
+                                    addTodoBottomSheet(
+                                        snapshot.data![index].todoid);
+                                  },
+                                  child: Container(
+                                    decoration: const BoxDecoration(
+                                        border: Border(
+                                            // 하단선
+                                            bottom: BorderSide(
+                                                color: Colors.black,
+                                                width: 1))),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10),
+                                      child: SizedBox(
+                                        height: 50,
+                                        child: Center(
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Row(
                                                 children: [
-                                                  Row(
-                                                    children: [
-                                                      // 카테고리 명
-                                                      SizedBox(
-                                                          width: 40,
-                                                          child: Text(snapshot
-                                                              .data![index]
-                                                              .category)),
-                                                      // 카테고리 색
-                                                      Container(
-                                                          width: 10,
-                                                          color: // 텍스트를 Color로 바꿔야함
-                                                              convertColor.strToColor(
+                                                  // 카테고리 명
+                                                  SizedBox(
+                                                      width: 40,
+                                                      child: Text(snapshot
+                                                          .data![index]
+                                                          .category)),
+                                                  // 카테고리 색
+                                                  Container(
+                                                      width: 10,
+                                                      color: // 텍스트를 Color로 바꿔야함
+                                                          convertColor
+                                                              .strToColor(
                                                                   snapshot
                                                                       .data![
                                                                           index]
                                                                       .color)),
-                                                      // 할일
-                                                      SizedBox(
-                                                        width: 160,
-                                                        child: Text(
-                                                          snapshot.data![index]
-                                                              .task,
-                                                          style: TextStyle(
-                                                            // 할일의 상태에 따라 취소선 true 일때 취소선
-                                                            decoration: snapshot
-                                                                        .data![
-                                                                            index]
-                                                                        .state ==
-                                                                    "완료"
-                                                                ? TextDecoration
-                                                                    .lineThrough
-                                                                : TextDecoration
-                                                                    .none,
-                                                            decorationThickness:
-                                                                2,
-                                                            fontSize: 18,
-                                                          ),
-                                                          maxLines: 1,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                        ),
+                                                  // 할일
+                                                  SizedBox(
+                                                    width: 160,
+                                                    child: Text(
+                                                      snapshot
+                                                          .data![index].task,
+                                                      style: TextStyle(
+                                                        // 할일의 상태에 따라 취소선 true 일때 취소선
+                                                        decoration: snapshot
+                                                                    .data![
+                                                                        index]
+                                                                    .state ==
+                                                                "완료"
+                                                            ? TextDecoration
+                                                                .lineThrough
+                                                            : TextDecoration
+                                                                .none,
+                                                        decorationThickness: 2,
+                                                        fontSize: 18,
                                                       ),
-                                                    ],
+                                                      maxLines: 1,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
                                                   ),
-                                                  // 날짜 표시
-                                                  Text(
-                                                      '${snapshot.data![index].tododate}까지'),
                                                 ],
                                               ),
-                                            ),
+                                              // 날짜 표시
+                                              Text(
+                                                  '${snapshot.data![index].tododate}까지'),
+                                            ],
                                           ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                );
-                        },
-                      ),
-                    );
-                  } else {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                },
-              ),
-            ],
+                                ),
+                              ),
+                            );
+                    },
+                  ),
+                );
+              } else {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+            },
           ),
-        ),
+        ],
       ),
       // 플로팅 버튼
       floatingActionButton: FloatingActionButton(

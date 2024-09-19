@@ -1,9 +1,11 @@
+import 'package:get_storage/get_storage.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:todo_list_app/model/user.dart';
 import 'package:todo_list_app/vm/database_handler.dart';
 
 class UserDataHandler {
   DatabaseHandler handler = DatabaseHandler();
+  GetStorage box = GetStorage();
 
   // 로그인
   Future<List<dynamic>> checkUser(String id, String pw) async {
@@ -105,5 +107,73 @@ class UserDataHandler {
     ).toList();
     // [0, 1] 에러, [1, 1] 정상
     return idCheck;
+  }
+
+  Future<List<User>> queryUser() async {
+    final Database db = await handler.initializeDB();
+    final List<Map<String, Object?>> queryResult = await db.rawQuery("""
+        SELECT *
+        FROM user
+        WHERE seq = ?
+    """, [box.read('nmcTodoUserSeq')]);
+
+    return queryResult.map((e) => User.fromMap(e)).toList();
+  }
+
+  Future updateUserImage(User user) async {
+    final Database db = await handler.initializeDB();
+    await db.rawUpdate("""
+        UPDATE user 
+        SET
+          profile = ?
+        WHERE
+          seq = ?
+    """, [user.profile, user.seq]);
+  }
+
+  Future updateUserName(User user) async {
+    final Database db = await handler.initializeDB();
+    await db.rawUpdate("""
+        UPDATE user 
+        SET
+          name = ?
+        WHERE
+          seq = ?
+    """, [user.name, user.seq]);
+  }
+
+  Future updateUserPw(User user) async {
+    final Database db = await handler.initializeDB();
+    await db.rawUpdate("""
+        UPDATE user 
+        SET
+          pw = ?
+        WHERE
+          seq = ?
+    """, [user.pw, user.seq]);
+  }
+
+  // 회원가입 아이디 중복 확인
+  Future<int> pwCheckUser(String pw, int seq) async {
+    final Database db = await handler.initializeDB();
+    int pwCheck = 0;
+    final List<Map<String, Object?>> queryResult = await db.rawQuery("""
+        SELECT
+            count(id) as id 
+        FROM 
+            user 
+        WHERE
+            seq = ? AND
+            pw = ?
+    """, [seq, pw]);
+
+    queryResult.map(
+      (e) {
+        Map<String, dynamic> res = e;
+        pwCheck = res['id'];
+      },
+    ).toList();
+    // [0, 1] 에러, [1, 1] 정상
+    return pwCheck;
   }
 }

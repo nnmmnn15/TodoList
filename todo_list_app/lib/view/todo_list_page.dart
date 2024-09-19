@@ -132,22 +132,6 @@ class _TodoListPageState extends State<TodoListPage> {
                                       },
                                       // 한번 터치시 업데이트, 수정
                                       onTap: () {
-                                        // addTodoController.text = UserList
-                                        //     .todoDataList[userIndex]
-                                        //     .todoList[index]
-                                        //     .todoText;
-                                        // taskDay = UserList.todoDataList[userIndex]
-                                        //     .todoList[index].deadline;
-                                        // categoryColor = UserList
-                                        //     .todoDataList[userIndex]
-                                        //     .todoList[index]
-                                        //     .categorySet
-                                        //     .categoryColor;
-                                        // categoryString = UserList
-                                        //     .todoDataList[userIndex]
-                                        //     .todoList[index]
-                                        //     .categorySet
-                                        //     .categoryName;
                                         addTodoController.text =
                                             snapshot.data![index].task;
                                         taskDay = DateTime.parse(

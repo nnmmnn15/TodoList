@@ -128,7 +128,7 @@ class TodolistHandler {
   }
 
   // 완료 목록 가져오기
-  Future<List<Task>> queryCompleteTask() async {
+  Future<List<Task>> queryCompleteTask(String search) async {
     final Database db = await handler.initializeDB();
     final List<Map<String, Object?>> queryResults = await db.rawQuery("""
         SELECT *
@@ -138,8 +138,28 @@ class TodolistHandler {
           todolist.user_seq = ? AND category.user_seq =? AND
           category.name = todolist.category AND
           isdelete = "안버림" AND
-          state = "완료"
-      """, [box.read('nmcTodoUserSeq'), box.read('nmcTodoUserSeq')]);
+          state = "완료" AND
+          task like ?
+      """,
+        [box.read('nmcTodoUserSeq'), box.read('nmcTodoUserSeq'), '%$search%']);
+    return queryResults.map((e) => Task.fromMap(e)).toList();
+  }
+
+  // 카테고리 별 할일 검색
+  Future<List<Task>> queryTaskByCategory(String category) async {
+    final Database db = await handler.initializeDB();
+    final List<Map<String, Object?>> queryResults = await db.rawQuery("""
+        SELECT *
+        FROM 
+          todolist, category
+        WHERE 
+          todolist.user_seq = ? AND category.user_seq =? AND
+          category.name = todolist.category AND
+          isdelete = "안버림" AND
+          todolist.category = ?
+        ORDER BY
+          tododate desc
+      """, [box.read('nmcTodoUserSeq'), box.read('nmcTodoUserSeq'), category]);
     return queryResults.map((e) => Task.fromMap(e)).toList();
   }
 }
